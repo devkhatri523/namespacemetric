@@ -20,7 +20,103 @@ public class ReadJson {
         String collectionName = "namespace_metrices";
 
         // JSON data
-       String jsonData = exchange.getIn().getBody(String.class);
+        String jsonData ="{\n" +
+                "    \"data\": {\n" +
+                "        \"clustername\": \"useast018\",\n" +
+                "        \"timestamp\": \"2023-08\",\n" +
+                "        \"namespaceMetrics\": {\n" +
+                "            \"cpu_utlization\": {\n" +
+                "                \"json\": {\n" +
+                "                    \"data\": {\n" +
+                "                        \"result\": [\n" +
+                "                            {\n" +
+                "                                \"metric\": {\n" +
+                "                                    \"label_ait\": \"45691\",\n" +
+                "                                    \"namespace\": \"cp-4606059\"\n" +
+                "                                },\n" +
+                "                                \"value\": [\n" +
+                "                                    1670,\n" +
+                "                                    \"0.02\"\n" +
+                "                                ]\n" +
+                "                            },\n" +
+                "                            {\n" +
+                "                                \"metric\": {\n" +
+                "                                    \"namespace\": \"cp-damin\"\n" +
+                "                                },\n" +
+                "                                \"value\": [\n" +
+                "                                    1690,\n" +
+                "                                    \"0.06\"\n" +
+                "                                ]\n" +
+                "                            }\n" +
+                "                        ]\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            },\n" +
+                "            \"memory_utilization\": {\n" +
+                "                \"json\": {\n" +
+                "                    \"data\": {\n" +
+                "                        \"result\": [\n" +
+                "                            {\n" +
+                "                                \"metric\": {\n" +
+                "                                    \"label_ait\": \"45691\",\n" +
+                "                                    \"namespace\": \"cp-4606059\"\n" +
+                "                                },\n" +
+                "                                \"value\": [\n" +
+                "                                    16922,\n" +
+                "                                    \"2.38\"\n" +
+                "                                ]\n" +
+                "                            },\n" +
+                "                            {\n" +
+                "                                \"metric\": {\n" +
+                "                                    \"label_ait\": \"sandbox\",\n" +
+                "                                    \"namespace\": \"cp-sandbox\"\n" +
+                "                                },\n" +
+                "                                \"value\": [\n" +
+                "                                    16922,\n" +
+                "                                    \"2.38\"\n" +
+                "                                ]\n" +
+                "                            }\n" +
+                "                        ]\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            },\n" +
+                "            \"pod_info\": {\n" +
+                "                \"result\": [\n" +
+                "                    {\n" +
+                "                        \"metric\": {\n" +
+                "                            \"namespace\": \"cp-0975620\",\n" +
+                "                            \"node\": \"lltwa04\",\n" +
+                "                            \"phase\": \"running\",\n" +
+                "                            \"pod\":\"abc\",\n" +
+                "                            \"label_ait\": \"12345\",\n" +
+                "                            \"pod_ip\":\"10.102\",\n" +
+                "                            \"uid\":\"dsaifnshg\"\n" +
+                "                        },\n" +
+                "                        \"value\": [\n" +
+                "                            1675,\n" +
+                "                            \"1\"\n" +
+                "                        ]\n" +
+                "                    },\n" +
+                "                    {\n" +
+                "                        \"metric\": {\n" +
+                "                            \"label_ait\": \"45691\",\n" +
+                "                            \"namespace\": \"cp-4606059\",\n" +
+                "                            \"node\": \"lltwa04abc\",\n" +
+                "                            \"phase\": \"running\",\n" +
+                "                            \"pod_ip\":\"10.102\",\n" +
+                "                            \"uid\":\"dsaifnshg\",\n" +
+                "                            \"pod\":\"cde\",\n" +
+                "                        },\n" +
+                "                        \"value\": [\n" +
+                "                            1645,\n" +
+                "                            \"1\"\n" +
+                "                        ]\n" +
+                "                    }\n" +
+                "                ]\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
 
         // Parse JSON and store metrics in MongoDB
         ObjectMapper objectMapper = new ObjectMapper();
@@ -41,8 +137,14 @@ public class ReadJson {
                 Document metricData = (Document) nameSpacesMetrices.get(nameSpaceMetricName);
 
                 Document jsonDataResult = (Document) metricData.get("json");
-                Document data  = (Document)  jsonDataResult.get("data");
-                List<Document> resultDocuments = (List<Document>) data.get("result");
+                List<Document> resultDocuments ;
+                Document data ;
+                if(jsonDataResult==null){
+                    resultDocuments =(List<Document>) metricData.get("result");
+                }else{
+                    data = (Document)  jsonDataResult.get("data");
+                    resultDocuments = (List<Document>) data.get("result");
+                }
 
                 for (Document resultDocument : resultDocuments) {
                   Document metric = (Document) resultDocument.get("metric");
