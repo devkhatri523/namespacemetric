@@ -3,31 +3,34 @@ package com.example.springmongodb.controller;
 import com.example.springmongodb.model.ContainerNamespace;
 import com.example.springmongodb.model.Metric;
 import com.example.springmongodb.model.NameSpaceMetrices;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.example.springmongodb.model.PodMetrices;
+import com.example.springmongodb.repository.NameSpaceRepo;
+import com.example.springmongodb.repository.PodInfoMetricesRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class ReadJson {
+    @Autowired
+   private  NameSpaceRepo nameSpaceRepo;
+    @Autowired
+    private  PodInfoMetricesRepo podInfoMetricesRepo;
 
     public static void main(String[] args) {
-        String connectionString = "mongodb://localhost:27017"; // Replace with your MongoDB connection string
-        String databaseName = "mydb";
-        String collectionName = "namespace_metrices";
+
 
         String jsonData = "{\"data\":{\"cluster_name\":\"useast18\",\"namespace_metrices\":{\"cpu_utilization\":{\"changed\":false,\"connection\":\"close\",\"date\":\"12sep\",\"json\":{\"data\":{\"result\":[{\"metric\":{\"namespace\":\"cp-0975620\"},\"value\":[1223435,\"0.1234\"]},{\"metric\":{\"label_ait\":\"45671\",\"namespace\":\"cp-0975620\"},\"value\":[1223435,\"0.1234\"]}]}}},\"memory_utilization\":{\"changed\":false,\"connection\":\"close\",\"json\":{\"data\":{\"result\":[{\"metric\":{\"namespace\":\"cp-0975620\"},\"value\":[1223435,\"0.1234\"]},{\"metric\":{\"label_ait\":\"45671\",\"namespace\":\"cp-0975620\"},\"value\":[1223435,\"0.1234\"]}]}}},\"percentage_pods_available_per_deployment\":{\"changed\":false,\"connection\":\"close\",\"json\":{\"data\":{\"result\":[{\"metric\":{\"container\":\"cdefgh\",\"deployment\":\"kkkkkk\",\"endpoint\":\"ffffff\",\"job\":\"ppppp\",\"namespace\":\"cp-build\",\"service\":\"afjkdn\"},\"value\":[1223435,\"0.1234\"]},{\"metric\":{\"container\":\"oooo\",\"deployment\":\"mmmmm\",\"endpoint\":\"nnnnn\",\"job\":\"ggggg\",\"namespace\":\"cp-build\",\"service\":\"afjkdn\"},\"value\":[1223435,\"0.1234\"]}]}}},\"percentage_pods_available_per_deploymentconfig\":{\"changed\":false,\"connection\":\"close\",\"json\":{\"data\":{\"result\":[{\"metric\":{\"container\":\"cdefgh\",\"deploymentconfig\":\"kkkkkk\",\"endpoint\":\"ffffff\",\"job\":\"ppppp\",\"label_ait\":\"yyyyyy\",\"instance\":\"iiiiii\",\"namespace\":\"cp-build\",\"service\":\"afjkdn\",\"pod\":\"bbbbbbb\"},\"value\":[1223435,\"0.1234\"]},{\"metric\":{\"container\":\"cdefgh\",\"deploymentconfig\":\"kkkkkk\",\"endpoint\":\"ffffff\",\"job\":\"ppppp\",\"label_ait\":\"yyyyyy\",\"instance\":\"iiiiii\",\"namespace\":\"cp-build\",\"service\":\"afjkdn\",\"pod\":\"bbbbbbb\"},\"value\":[1223435,\"0.1234\"]}]}}},\"percentage_pods_available_per_statefulset\":{\"changed\":false,\"connection\":\"close\",\"json\":{\"data\":{\"result\":[{\"metric\":{\"container\":\"cdefgh\",\"endpoint\":\"ffffff\",\"job\":\"ppppp\",\"namespace\":\"cp-build\",\"service\":\"afjkdn\",\"pod\":\"bbbbbbb\",\"statefulset\":\"vvvvvv\"},\"value\":[1223435,\"0.1234\"]},{\"metric\":{\"container\":\"cdefgh\",\"endpoint\":\"ffffff\",\"job\":\"ppppp\",\"namespace\":\"cp-build\",\"service\":\"afjkdn\",\"pod\":\"bbbbbbb\",\"statefulset\":\"vvvvvv\"},\"value\":[1223435,\"0.1234\"]}]}}},\"resource_quota\":{\"changed\":false,\"connection\":\"close\",\"json\":{\"data\":{\"result\":[{\"metric\":{\"container\":\"cdefgh\",\"endpoint\":\"ffffff\",\"job\":\"ppppp\",\"label_ait\":\"72967\",\"namespace\":\"cp-build\",\"service\":\"afjkdn\",\"pod\":\"bbbbbbb\",\"resource\":\"oooooo\",\"resource_quota\":\"qqqqq\"},\"value\":[1223435,\"0.1234\"]},{\"metric\":{\"container\":\"cdefgh\",\"endpoint\":\"ffffff\",\"job\":\"ppppp\",\"label_ait\":\"72967\",\"namespace\":\"cp-build\",\"service\":\"afjkdn\",\"pod\":\"bbbbbbb\",\"resource\":\"oooooo\",\"resource_quota\":\"qqqqq\"},\"value\":[1223435,\"0.1234\"]}]}}},\"total_running_pods\":{\"changed\":false,\"connection\":\"close\",\"json\":{\"data\":{\"result\":[{\"metric\":{\"namespace\":\"cp-0975620\"},\"value\":[1223435,\"0.1234\"]},{\"metric\":{\"label_ait\":\"45671\",\"namespace\":\"cp-0975620\"},\"value\":[1223435,\"0.1234\"]}]}}}},\"pod_info\":{\"result\":[{\"metric\":{\"container\":\"cdefgh\",\"endpoint\":\"ffffff\",\"job\":\"ppppp\",\"namespace\":\"cp-build\",\"node\":\"rrrrr\",\"phase\":\"running\",\"service\":\"afjkdn\",\"pod\":\"bbbbbbb\",\"pod_ip\":\"54844\",\"uid\":\"12454\"},\"value\":[1223435,\"0.1234\"]},{\"metric\":{\"container\":\"cdefgh\",\"endpoint\":\"ffffff\",\"job\":\"ppppp\",\"namespace\":\"cp-build\",\"node\":\"rrrrr\",\"phase\":\"running\",\"service\":\"afjkdn\",\"pod\":\"bbbbbbb\",\"pod_ip\":\"54844\",\"uid\":\"12454\"},\"value\":[1223435,\"0.1234\"]}]}}}";
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            // Connect to MongoDB
-            MongoClient mongoClient = MongoClients.create(connectionString);
-            MongoDatabase database = mongoClient.getDatabase(databaseName);
-            MongoCollection<Document> collection = database.getCollection(collectionName);
             // Parse JSON data
             Document jsonDataDocument = Document.parse(jsonData);
             Document namespaceMetricesData = (Document) jsonDataDocument.get("data");
@@ -67,15 +70,15 @@ public class ReadJson {
                 containerNamespace.setNameSpaceMetrices(nameSpaceMetricesList);
             }
            // Document
-            Document containerMetricesData = new Document("cont_namespace_info", containerNamespace);
-            collection.insertOne(Document.parse(objectMapper.writeValueAsString(containerMetricesData)));
+          //  Document containerMetricesData = new Document("cont_namespace_info", containerNamespace);
+            nameSpaceRepo.save(containerNamespace);
 
             // parse pod info
 
             Document podInfoMetrices = (Document) namespaceMetricesData.get("pod_info");
             List<Document> podInfoResult  = (List<Document>) podInfoMetrices.get("result");
             List<Metric> metricList = new ArrayList<>();
-            NameSpaceMetrices nameSpaces = new NameSpaceMetrices();
+            PodMetrices nameSpaces = new PodMetrices();
             for (Document podInfoResultDocument : podInfoResult) {
                 Document metric = (Document) podInfoResultDocument.get("metric");
                 List<Object> metricValue = (List<Object>) podInfoResultDocument.get("value");
@@ -85,11 +88,10 @@ public class ReadJson {
             }
             nameSpaces.setNamesSpaceName("pod_info");
             nameSpaces.setMetric(metricList);
-            Document podInfoMetrics = new Document("pod_info_metrices", nameSpaces);
-            collection.insertOne(Document.parse(objectMapper.writeValueAsString(podInfoMetrics)));
+            podInfoMetricesRepo.save(nameSpaces);
 
             // Close MongoDB connection
-            mongoClient.close();
+           // mongoClient.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
