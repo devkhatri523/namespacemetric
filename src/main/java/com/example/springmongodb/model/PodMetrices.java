@@ -8,7 +8,9 @@ import java.util.List;
 @Data
 @Document("pod_info")
 public class PodMetrices {
-    private String namesSpaceName ;
-    private List<Metric> metric;
-    private String value;
+    private String clusterName;
+    private String ait;
+    private String namespace;
+    private String lastUpdatedDate;
+    private List<Result> result;
 }

@@ -6,9 +6,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
 @Data
-@Document("namespace_metrices")
+@Document("cont_namespace_info")
 public class ContainerNamespace {
     private String clusterName;
-    private List<NameSpaceMetrices> nameSpaceMetrices;
+    private String ait;
+    private String namespace;
     private String lastUpdatedDate;
+    private List<NameSpaceMetrices> nameSpaceMetrices;
+
 }
