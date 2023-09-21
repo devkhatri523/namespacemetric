@@ -1,6 +1,7 @@
 package com.example.springmongodb.service;
 
 import com.example.springmongodb.model.*;
+import com.example.springmongodb.util.Utility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
 import java.io.IOException;
@@ -14,12 +15,9 @@ import java.util.Locale;
 
 
 public class Group {
-   // private static final NameSpaceRepo nameSpaceRepo;
-
-
+   // private static final NameSpaceRepo nameSpaceRepo
 
     public static void main(String... args) throws IOException, ParseException {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM", Locale.ENGLISH);
         String jsonData = "{\n" +
                 "    \"data\":{\n" +
                 "        \"cluster_name\":\"useast18\",\n" +
@@ -27,7 +25,7 @@ public class Group {
                 "            \"cpu_utilization\":{\n" +
                 "                \"changed\":false,\n" +
                 "                \"connection\":\"close\",\n" +
-                "\t\t\t\t\"date\":\"12 sep\",\n" +
+                "\t\t\t\t\"date\":\"Thu,17 Aug 2023 15:59:57 GMT\",\n" +
                 "                \"json\":{\n" +
                 "                    \"data\":{\n" +
                 "                        \"result\":[\n" +
@@ -374,7 +372,7 @@ public class Group {
                 "                                },\n" +
                 "                                \"value\":[\n" +
                 "                                    1223435,\n" +
-                "                                    \"0.1234\"\n" +
+                "                                    \"0.12345\"\n" +
                 "                                ]\n" +
                 "                            }\n" +
                 "\n" +
@@ -389,7 +387,7 @@ public class Group {
         String clusterName = (String) data.get("cluster_name");
         Document nameSpacesMetricesData = (Document) data.get("namespace_metrices");
         Document firstMetricResultData = (Document) nameSpacesMetricesData.get("cpu_utilization");
-        Date lastUpdateDate = simpleDateFormat.parse(firstMetricResultData.getString("date"));
+        Date lastUpdateDate = Utility.parseDate(firstMetricResultData.getString("date"));
         Document firstJsonData = (Document) firstMetricResultData.get("json");
         Document firstResult = (Document) firstJsonData.get("data");
         List<Document> resultResultDoc = (List<Document>) firstResult.get("result");
@@ -433,6 +431,7 @@ public class Group {
                 nameSpaceMetrices.setResult(results);
                 nameSpaceMetricesList.add(nameSpaceMetrices);
                 containerNamespace.setNameSpaceMetrices(nameSpaceMetricesList);
+                containerNamespace.setTimeStamp(lastUpdateDate);
             }
             containerNamespaceList.add(containerNamespace);
         }
@@ -471,7 +470,7 @@ public class Group {
                 result.setValue(valueData.get(1).toString());
                 results.add(result);
                 podMetrices.setResult(results);
-                podMetrices.setLastUpdatedDate(simpleDateFormat.parse(String.valueOf((lastUpdateDate))));
+                podMetrices.setLastUpdatedDate((lastUpdateDate));
             }
             podMetricesList.add(podMetrices);
         }
