@@ -367,12 +367,49 @@ public class Group {
                 "                                    \"phase\":\"running\",\n" +
                 "                                    \"service\":\"afjkdn\",\n" +
                 "                                    \"pod\":\"bbbbbbb\",\n" +
-                "                                    \"pod_ip\":\"54844\",\n" +
+                "                                    \"pod_ip\":\"54846\",\n" +
                 "                                    \"uid\":\"12454\"\n" +
                 "                                },\n" +
                 "                                \"value\":[\n" +
                 "                                    1223435,\n" +
-                "                                    \"0.12345\"\n" +
+                "                                    \"0.14\"\n" +
+                "                                ]\n" +
+                "                            },\n" +
+                "\t\t\t\t\t\t\t{\n" +
+                "                                \"metric\":{\n" +
+                "\t\t\t\t\t\t\t\t\t \"label_ait\":\"890\",\n" +
+                "                                    \"namespace\":\"cp-0975621\",\n" +
+                "                                     \"container\":\"cdefgh\",\n" +
+                "                                    \"endpoint\":\"ffffff\",\n" +
+                "                                    \"job\":\"ppppp\",\n" +
+                "                                    \"node\":\"rrrrr\",\n" +
+                "                                    \"phase\":\"running\",\n" +
+                "                                    \"service\":\"afjkdn\",\n" +
+                "                                    \"pod\":\"bbbbbbb\",\n" +
+                "                                    \"pod_ip\":\"54846\",\n" +
+                "                                    \"uid\":\"12454\"\n" +
+                "                                },\n" +
+                "                                \"value\":[\n" +
+                "                                    1223435,\n" +
+                "                                    \"0.15\"\n" +
+                "                                ]\n" +
+                "                            },{\n" +
+                "                                \"metric\":{\n" +
+                "\t\t\t\t\t\t\t\t\t \"label_ait\":\"890\",\n" +
+                "                                    \"namespace\":\"cp-0975621\",\n" +
+                "                                     \"container\":\"cdefgh\",\n" +
+                "                                    \"endpoint\":\"ffffff\",\n" +
+                "                                    \"job\":\"ppppp\",\n" +
+                "                                    \"node\":\"rrrrr\",\n" +
+                "                                    \"phase\":\"running\",\n" +
+                "                                    \"service\":\"afjkdn\",\n" +
+                "                                    \"pod\":\"bbbbbbb\",\n" +
+                "                                    \"pod_ip\":\"54846\",\n" +
+                "                                    \"uid\":\"12454\"\n" +
+                "                                },\n" +
+                "                                \"value\":[\n" +
+                "                                    1223435,\n" +
+                "                                    \"0.16\"\n" +
                 "                                ]\n" +
                 "                            }\n" +
                 "\n" +
@@ -392,6 +429,7 @@ public class Group {
         Document firstResult = (Document) firstJsonData.get("data");
         List<Document> resultResultDoc = (List<Document>) firstResult.get("result");
         List<ContainerNamespace> containerNamespaceList = new ArrayList<>();
+        List<PodMetrices> podMetricesList = new ArrayList<>();
         for (int i = 0; i < resultResultDoc.size(); i++) {
             Document metric = (Document) resultResultDoc.get(i).get("metric");
             String label_ait =  metric.getString("label_ait");
@@ -434,47 +472,35 @@ public class Group {
                 containerNamespace.setTimeStamp(lastUpdateDate);
             }
             containerNamespaceList.add(containerNamespace);
-        }
-      //  nameSpaceRepo.insert(containerNamespaceList);
 
-// for pod info
-
-        Document secondMetricResultData = (Document) data.get("pod_info");
-        List<Document> secondResult = (List<Document>) secondMetricResultData.get("result");
-        List<PodMetrices> podMetricesList = new ArrayList<>();
-        for (int i = 0; i < secondResult.size(); i++) {
-            Document metric = (Document) secondResult.get(i).get("metric");
-            String label_ait =  metric.getString("label_ait");
-            String nameSpace = metric.getString("namespace");
-            if (label_ait == "" || label_ait == null) {
-                continue;
-            }
+            //pod metrices
+            Document secondMetricResultData = (Document) data.get("pod_info");
+            List<Document> secondResult = (List<Document>) secondMetricResultData.get("result");
+            PodMetrices podMetrices =  new PodMetrices();
             List<Result> results = new ArrayList<>();
-            PodMetrices podMetrices = new PodMetrices();
-            podMetrices.setAit(label_ait);
-            podMetrices.setNamespace(nameSpace);
-            podMetrices.setClusterName(clusterName);
-            for (int j = 0; j < secondResult.size(); j++) {
-                Document resultList = secondResult.get(j);
-                Document metricInfo = (Document) resultList.get("metric");
-                String labelAit = metricInfo.getString("label_ait");
-                String namespace = metricInfo.getString("namespace");
-                // Check if metric contains label_ait
-                if (labelAit == "" || labelAit == null || !labelAit.equals(label_ait)|| !namespace.equals(nameSpace)){
+            for (int k = 0; k < secondResult.size(); k++) {
+                Document podmetric = (Document) secondResult.get(k).get("metric");
+                String pod_label_ait =  podmetric.getString("label_ait");
+                String pod_nameSpace = podmetric.getString("namespace");
+                if (pod_label_ait == "" || pod_nameSpace == null || !pod_label_ait.equals(label_ait) || !pod_nameSpace.equals(nameSpace)) {
                     continue;
                 }
-                Metric metricdata = objectMapper.readValue(metricInfo.toJson(), Metric.class);
+                podMetrices.setAit(label_ait);
+                podMetrices.setNamespace(nameSpace);
+                podMetrices.setClusterName(clusterName);
+                // Check if metric contains label_ait
+                Metric metricdata = objectMapper.readValue(podmetric.toJson(), Metric.class);
                 Result result = new Result();
-                List<Object> valueData= (List<Object>) resultList.get("value");
+                List<Object> valueData= (List<Object>) secondResult.get(k).get("value");
                 result.setMetric(metricdata);
                 result.setValue(valueData.get(1).toString());
                 results.add(result);
-                podMetrices.setResult(results);
-                podMetrices.setLastUpdatedDate((lastUpdateDate));
             }
+            podMetrices.setResult(results);
+            podMetrices.setLastUpdatedDate((lastUpdateDate));
             podMetricesList.add(podMetrices);
         }
-
-        // podinfoMetricesRepo.save(podMetricsList)
     }
+    // podinfoMetricesRepo.save(podMetricsList)
+    //  nameSpaceRepo.insert(containerNamespaceList);
 }
