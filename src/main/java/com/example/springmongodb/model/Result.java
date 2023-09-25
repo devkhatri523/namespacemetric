@@ -9,9 +9,17 @@ public class Result {
 
     @Override
     public String toString() {
-        return "{" +
-                  metric +
-                ", " + value + '\'' +
-                '}';
+        StringBuilder buildString = new StringBuilder();
+        buildString.append("{");
+        if (getMetric() != null) {
+            buildString.append(metric.toString());
+            buildString.append(",");
+        }
+        if (getValue() != null) {
+            buildString.append(value);
+        } else {
+            buildString.append("}");
+        }
+        return buildString.toString();
     }
 }
