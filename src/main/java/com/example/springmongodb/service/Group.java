@@ -433,19 +433,20 @@ public class Group {
         Document firstJsonData = (Document) firstMetricResultData.get("json");
         Document firstResult = (Document) firstJsonData.get("data");
         List<Document> resultResultDoc = (List<Document>) firstResult.get("result");
-        PodMetrices podMetrices =  new PodMetrices();
+        PodMetrices podMetrices = new PodMetrices();
+        ContainerNamespace containerNamespace =null;
         for (int i = 0; i < resultResultDoc.size(); i++) {
             Document metric = (Document) resultResultDoc.get(i).get("metric");
-            String label_ait =  metric.getString("label_ait");
+            String label_ait = metric.getString("label_ait");
             String nameSpace = metric.getString("namespace");
             if (label_ait == "" || label_ait == null) {
                 continue;
             }
-            ContainerNamespace containerNamespace = new ContainerNamespace();
+            containerNamespace = new ContainerNamespace();
             containerNamespace.setClusterName(clusterName);
             containerNamespace.setAit(label_ait);
             containerNamespace.setNamespace(nameSpace);
-            Map<String,String> nameSpaceMetricesMap = new HashMap<>();
+            Map<String, String> nameSpaceMetricesMap = new HashMap<>();
             for (String metricName : nameSpacesMetricesData.keySet()) {
                 Document nameSpaceData = (Document) nameSpacesMetricesData.get(metricName);
                 Document nameSpaceJson = (Document) nameSpaceData.get("json");
@@ -454,7 +455,7 @@ public class Group {
 
                 List<String> resultArray = new ArrayList<>();
                 List<Result> results = new ArrayList<>();
-                Map<String,String> resultMap=new HashMap<>();
+                Map<String, String> resultMap = new HashMap<>();
                 for (int j = 0; j < resultList.size(); j++) {
                     Result result = new Result();
                     Document metricInfo = (Document) resultList.get(j).get("metric");
@@ -472,44 +473,41 @@ public class Group {
                     results.add(result);
                 }
                 resultArray.add(results.toString());
-                resultMap.put(metricName,resultArray.toString());
+                resultMap.put(metricName, resultArray.toString());
                 nameSpaceMetricesMap.putAll(resultMap);
             }
             containerNamespace.setNameSpaceMetricData(nameSpaceMetricesMap);
 
-            //save to db
 
             //pod metrices
             Document secondMetricResultData = (Document) data.get("pod_info");
             List<Document> secondResult = (List<Document>) secondMetricResultData.get("result");
-            Map<String,String> podInfoMetricMap = new HashMap<>();
+            Map<String, String> podInfoMetricMap = new HashMap<>();
             podMetrices.setClusterName(clusterName);
             List<Result> results = new ArrayList<>();
             List<String> podResultArray = new ArrayList<>();
             for (int k = 0; k < secondResult.size(); k++) {
                 Document podmetric = (Document) secondResult.get(k).get("metric");
-                String pod_label_ait =  podmetric.getString("label_ait");
+                String pod_label_ait = podmetric.getString("label_ait");
                 String pod_nameSpace = podmetric.getString("namespace");
                 if (pod_label_ait == "" || pod_nameSpace == null || !pod_label_ait.equals(label_ait) || !pod_nameSpace.equals(nameSpace)) {
                     continue;
                 }
-               /* podMetrices.setAit(label_ait);
-                podMetrices.setNamespace(nameSpace);*/
-
                 // Check if metric contains label_ait
                 Metric metricdata = objectMapper.readValue(podmetric.toJson(), Metric.class);
                 Result result = new Result();
-                List<Object> valueData= (List<Object>) secondResult.get(k).get("value");
+                List<Object> valueData = (List<Object>) secondResult.get(k).get("value");
                 result.setMetric(metricdata);
                 result.setValue(valueData.get(1).toString());
                 results.add(result);
             }
             podResultArray.add(results.toString());
-            podInfoMetricMap.put("pod_info",podResultArray.toString());
+            podInfoMetricMap.put("pod_info", podResultArray.toString());
             podMetrices.setLastUpdatedDate((lastUpdateDate));
             podMetrices.setPodInfoData(podInfoMetricMap);
         }
-      // insert pod data
+        // insert pod metrices
+        //insert container namespaces
     }
 
 }
