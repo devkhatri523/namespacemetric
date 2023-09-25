@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Document("cont_namespace_info")
@@ -15,6 +16,5 @@ public class ContainerNamespace {
     private String ait;
     private String namespace;
     private Date timeStamp;
-    private List<NameSpaceMetrices> nameSpaceMetrices;
-
+    private Map<String,String> nameSpaceMetricData;
 }

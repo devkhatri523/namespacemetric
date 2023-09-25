@@ -1,23 +1,27 @@
 package com.example.springmongodb.service;
 
 import com.example.springmongodb.model.*;
+import com.example.springmongodb.repository.NameSpaceRepo;
+import com.example.springmongodb.repository.PodInfoMetricesRepo;
 import com.example.springmongodb.util.Utility;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.camel.spi.StreamCachingStrategy;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.IOException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 
 public class Group {
-   // private static final NameSpaceRepo nameSpaceRepo
+
 
     public static void main(String... args) throws IOException, ParseException {
+
+
         String jsonData = "{\n" +
                 "    \"data\":{\n" +
                 "        \"cluster_name\":\"useast18\",\n" +
@@ -418,6 +422,7 @@ public class Group {
                 "        }\n" +
                 "    }\n" +
                 "}";
+
         ObjectMapper objectMapper = new ObjectMapper();
         Document jsonDataDocument = Document.parse(jsonData);
         Document data = (Document) jsonDataDocument.get("data");
@@ -428,8 +433,7 @@ public class Group {
         Document firstJsonData = (Document) firstMetricResultData.get("json");
         Document firstResult = (Document) firstJsonData.get("data");
         List<Document> resultResultDoc = (List<Document>) firstResult.get("result");
-        List<ContainerNamespace> containerNamespaceList = new ArrayList<>();
-        List<PodMetrices> podMetricesList = new ArrayList<>();
+        PodMetrices podMetrices =  new PodMetrices();
         for (int i = 0; i < resultResultDoc.size(); i++) {
             Document metric = (Document) resultResultDoc.get(i).get("metric");
             String label_ait =  metric.getString("label_ait");
@@ -441,16 +445,16 @@ public class Group {
             containerNamespace.setClusterName(clusterName);
             containerNamespace.setAit(label_ait);
             containerNamespace.setNamespace(nameSpace);
-            List<NameSpaceMetrices> nameSpaceMetricesList = new ArrayList<>();
+            Map<String,String> nameSpaceMetricesMap = new HashMap<>();
             for (String metricName : nameSpacesMetricesData.keySet()) {
                 Document nameSpaceData = (Document) nameSpacesMetricesData.get(metricName);
                 Document nameSpaceJson = (Document) nameSpaceData.get("json");
                 Document nameSpaceJsonData = (Document) nameSpaceJson.get("data");
                 List<Document> resultList = (List<Document>) nameSpaceJsonData.get("result");
-                NameSpaceMetrices nameSpaceMetrices = new NameSpaceMetrices();
-                nameSpaceMetrices.setNamesSpaceName(metricName);
+
                 List<String> resultArray = new ArrayList<>();
                 List<Result> results = new ArrayList<>();
+                Map<String,String> resultMap=new HashMap<>();
                 for (int j = 0; j < resultList.size(); j++) {
                     Result result = new Result();
                     Document metricInfo = (Document) resultList.get(j).get("metric");
@@ -468,17 +472,18 @@ public class Group {
                     results.add(result);
                 }
                 resultArray.add(results.toString());
-                nameSpaceMetrices.setResult(resultArray);
-                nameSpaceMetricesList.add(nameSpaceMetrices);
-                containerNamespace.setNameSpaceMetrices(nameSpaceMetricesList);
-                containerNamespace.setTimeStamp(lastUpdateDate);
+                resultMap.put(metricName,resultArray.toString());
+                nameSpaceMetricesMap.putAll(resultMap);
             }
-            containerNamespaceList.add(containerNamespace);
+            containerNamespace.setNameSpaceMetricData(nameSpaceMetricesMap);
+
+            //save to db
 
             //pod metrices
             Document secondMetricResultData = (Document) data.get("pod_info");
             List<Document> secondResult = (List<Document>) secondMetricResultData.get("result");
-            PodMetrices podMetrices =  new PodMetrices();
+            Map<String,String> podInfoMetricMap = new HashMap<>();
+            podMetrices.setClusterName(clusterName);
             List<Result> results = new ArrayList<>();
             List<String> podResultArray = new ArrayList<>();
             for (int k = 0; k < secondResult.size(); k++) {
@@ -488,9 +493,9 @@ public class Group {
                 if (pod_label_ait == "" || pod_nameSpace == null || !pod_label_ait.equals(label_ait) || !pod_nameSpace.equals(nameSpace)) {
                     continue;
                 }
-                podMetrices.setAit(label_ait);
-                podMetrices.setNamespace(nameSpace);
-                podMetrices.setClusterName(clusterName);
+               /* podMetrices.setAit(label_ait);
+                podMetrices.setNamespace(nameSpace);*/
+
                 // Check if metric contains label_ait
                 Metric metricdata = objectMapper.readValue(podmetric.toJson(), Metric.class);
                 Result result = new Result();
@@ -500,11 +505,11 @@ public class Group {
                 results.add(result);
             }
             podResultArray.add(results.toString());
-            podMetrices.setResult(podResultArray);
+            podInfoMetricMap.put("pod_info",podResultArray.toString());
             podMetrices.setLastUpdatedDate((lastUpdateDate));
-            podMetricesList.add(podMetrices);
+            podMetrices.setPodInfoData(podInfoMetricMap);
         }
+      // insert pod data
     }
-    // podinfoMetricesRepo.save(podMetricsList)
-    //  nameSpaceRepo.insert(containerNamespaceList);
+
 }
