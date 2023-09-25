@@ -24,5 +24,29 @@ public class Metric {
     private String statefulset;
     private String instance;
     private String deploymentconfig;
+
+    @Override
+    public String toString() {
+        return "{" +
+                "container='" + container + '\'' +
+                ", endpoint='" + endpoint + '\'' +
+                ", job='" + job + '\'' +
+                ", namespace='" + namespace + '\'' +
+                ", node='" + node + '\'' +
+                ", phase='" + phase + '\'' +
+                ", service='" + service + '\'' +
+                ", pod='" + pod + '\'' +
+                ", pod_ip='" + pod_ip + '\'' +
+                ", uid='" + uid + '\'' +
+                ", label_ait='" + label_ait + '\'' +
+                ", resource='" + resource + '\'' +
+                ", resource_quota='" + resource_quota + '\'' +
+                ", statefulset='" + statefulset + '\'' +
+                ", instance='" + instance + '\'' +
+                ", deploymentconfig='" + deploymentconfig + '\'' +
+                ", deployment='" + deployment + '\'' +
+                '}';
+    }
+
     private String deployment;
 }

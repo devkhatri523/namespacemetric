@@ -17,7 +17,7 @@ public class PodMetrices {
     private String ait;
     private String namespace;
     private Date lastUpdatedDate;
-    private List<Result> result;
+    private List<String> result;
     @DBRef
     private ContainerNamespace containerNamespace;
 }

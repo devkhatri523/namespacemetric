@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 public class NameSpaceMetrices {
     private String namesSpaceName ;
-    private List<Result> result;
+    private List<String> result;
 
 }

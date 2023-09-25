@@ -449,6 +449,7 @@ public class Group {
                 List<Document> resultList = (List<Document>) nameSpaceJsonData.get("result");
                 NameSpaceMetrices nameSpaceMetrices = new NameSpaceMetrices();
                 nameSpaceMetrices.setNamesSpaceName(metricName);
+                List<String> resultArray = new ArrayList<>();
                 List<Result> results = new ArrayList<>();
                 for (int j = 0; j < resultList.size(); j++) {
                     Result result = new Result();
@@ -466,7 +467,8 @@ public class Group {
                     result.setValue(value);
                     results.add(result);
                 }
-                nameSpaceMetrices.setResult(results);
+                resultArray.add(results.toString());
+                nameSpaceMetrices.setResult(resultArray);
                 nameSpaceMetricesList.add(nameSpaceMetrices);
                 containerNamespace.setNameSpaceMetrices(nameSpaceMetricesList);
                 containerNamespace.setTimeStamp(lastUpdateDate);
@@ -478,6 +480,7 @@ public class Group {
             List<Document> secondResult = (List<Document>) secondMetricResultData.get("result");
             PodMetrices podMetrices =  new PodMetrices();
             List<Result> results = new ArrayList<>();
+            List<String> podResultArray = new ArrayList<>();
             for (int k = 0; k < secondResult.size(); k++) {
                 Document podmetric = (Document) secondResult.get(k).get("metric");
                 String pod_label_ait =  podmetric.getString("label_ait");
@@ -496,7 +499,8 @@ public class Group {
                 result.setValue(valueData.get(1).toString());
                 results.add(result);
             }
-            podMetrices.setResult(results);
+            podResultArray.add(results.toString());
+            podMetrices.setResult(podResultArray);
             podMetrices.setLastUpdatedDate((lastUpdateDate));
             podMetricesList.add(podMetrices);
         }

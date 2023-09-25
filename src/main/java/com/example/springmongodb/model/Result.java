@@ -6,4 +6,12 @@ import lombok.Data;
 public class Result {
     private Metric metric;
     private String value;
+
+    @Override
+    public String toString() {
+        return "{" +
+                  metric +
+                ", " + value + '\'' +
+                '}';
+    }
 }
