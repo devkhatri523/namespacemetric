@@ -21,11 +21,8 @@ public class Utility {
     public static void main(String[] args) throws ParseException {
         String timestamp = "2023-10-04T20:16:30Z";
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date date = inputFormat.parse(timestamp);
         SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String georgianDate = outputFormat.format(date);
-        Date date1 = outputFormat.parse(georgianDate);
+        Date date1 = outputFormat.parse(outputFormat.format(inputFormat.parse(timestamp)));
 
         System.out.println("Georgian Date: " + date1);
     }
