@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -429,7 +430,7 @@ public class Group {
         String clusterName = (String) data.get("cluster_name");
         Document nameSpacesMetricesData = (Document) data.get("namespace_metrices");
         Document firstMetricResultData = (Document) nameSpacesMetricesData.get("cpu_utilization");
-        Date lastUpdateDate = Utility.parseDate(firstMetricResultData.getString("date"));
+        //LocalDateTime lastUpdateDate = Utility.parseDate(firstMetricResultData.getString("date"));
         Document firstJsonData = (Document) firstMetricResultData.get("json");
         Document firstResult = (Document) firstJsonData.get("data");
         List<Document> resultResultDoc = (List<Document>) firstResult.get("result");
@@ -503,7 +504,7 @@ public class Group {
             }
             podResultArray.add(results.toString());
             podInfoMetricMap.put("pod_info", podResultArray.toString());
-            podMetrices.setLastUpdatedDate((lastUpdateDate));
+           // podMetrices.setLastUpdatedDate((lastUpdateDate));
             podMetrices.setPodInfoData(podInfoMetricMap);
         }
         // insert pod metrices
