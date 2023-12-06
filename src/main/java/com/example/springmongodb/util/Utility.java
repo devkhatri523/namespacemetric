@@ -31,7 +31,7 @@ public class Utility {
 
     /* add this line on your query url formatter
      .queryParam("from",getFormattedDateString(LocalDateTime.now().minusMinutes(15))).
-     queryParam("to",getFormattedDateString(LocalDateTime.now().minusMinutes(15)))
+     queryParam("to",getFormattedDateString(LocalDateTime.now()))
 
      */
 
