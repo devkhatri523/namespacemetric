@@ -19,4 +19,29 @@ public class Utility {
         return LocalDateTime.parse(ldt.toString(),outputFormatter);
 
     }
+
+
+    public static void main(String[] args) throws ParseException {
+        System.out.println(getFormattedDateString(LocalDateTime.now().minusMinutes(15)));
+    }
+
+
+
+
+
+    /* add this line on your query url formatter
+     .queryParam("from",getFormattedDateString(LocalDateTime.now().minusMinutes(15))).
+     queryParam("to",getFormattedDateString(LocalDateTime.now().minusMinutes(15)))
+
+     */
+
+    public static String  getFormattedDateString(LocalDateTime dateTime) throws ParseException {
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern(LOCAL_FORMAT);
+        return dateTime.format(inputFormatter);
+
+    }
+
+
+
+
 }
